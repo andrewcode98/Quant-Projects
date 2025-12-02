@@ -108,7 +108,7 @@ def fft_call_price(
     return y0 + (y1 - y0) * (K - x0) / (x1 - x0)
 
 def heston_fft_put_price(
-    S0: float, K: float, T: float, r: float, q: float, p,
+    cf, S0: float, K: float, T: float, r: float, q: float, p,
     N: int = 4096, eta: float = 0.25, alpha: float = 1.5
 ):
     """Put via put–call parity."""
