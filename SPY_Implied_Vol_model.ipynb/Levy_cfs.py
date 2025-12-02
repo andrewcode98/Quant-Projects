@@ -29,6 +29,21 @@ class KouParams:
     eta_minus: float
 
 
+@dataclass
+class VGBparams:
+    beta: float
+    eta: float
+    sigma: float
+    theta: float
+
+@dataclass
+class NIGparams:
+    alpha : float
+    beta : float
+    delta: float
+    sigma: float
+
+
 # All characteristic functions of Levy processes for St
 
 # SVJ
@@ -88,3 +103,18 @@ def Kou_cf_St(u, S0, T, r, q, p:KouParams):
     drift = (r - q - p.lamda * kappa - 0.5 * p.sigma ** 2) * T
 
     return np.exp(1j * u * drift - 0.5 * p.sigma ** 2 * u ** 2 * T + p.lamda * T * (M_Y - 1.0))
+
+# VGB
+def VGB_cf_St(u, S0, T, r, q, p:VGBparams):
+    omega = (1.0/p.beta) * np.log(1 - p.beta * p. theta - 0.5 * p.beta * p.eta ** 2)
+    drift_term = np.exp(1j * u * (r - q + omega - 0.5 * p.sigma ** 2) * T)
+    diff_term = np.exp(-0.5 * p.sigma ** 2 * u ** 2 * T)
+    extra_term = (1.0 - 1j * p.beta * p.theta * u + 0.5 * p.beta * p.eta ** 2 * u ** 2) ** (-T/p.beta)
+    return drift_term * diff_term * extra_term
+
+# NIG
+def NIG_cf_St(u, S0, T, r, q, p:NIGparams):
+    omega = p.delta * (np.sqrt(p.alpha ** 2 - (p.beta  + 1)**2) - np.sqrt(p.alpha ** 2 - p.beta ** 2))
+    first_term = np.exp(1j * u * (r - q + omega - 0.5 * p.sigma ** 2) * T)
+    phi_x = np.exp(p.delta * T * (np.sqrt(p.alpha ** 2 - p.beta ** 2) - np.sqrt(p.alpha ** 2 - (p.beta  + 1j * u) ** 2)) - 0.5 * p.sigma ** 2 * u ** 2 * T)
+    return first_term * phi_x
